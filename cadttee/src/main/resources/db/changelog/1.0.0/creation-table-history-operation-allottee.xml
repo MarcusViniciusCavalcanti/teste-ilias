@@ -1,0 +1,38 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="cretion-history-allottee" author="vinicius">
+        <createTable tableName="HISTORY_OPERATION_ALLOTTEE">
+            <column name="ID"
+                    type="integer"
+                    autoIncrement="true">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="PK_HISTORY_OPERATION_ALLOTTEE"/>
+            </column>
+
+            <column name="OPERATION" type="VARCHAR(25 ${char})" />
+
+            <column name="REASON" type="CLOB" />
+
+            <column name="DATE" type="DATE"/>
+
+            <column name="ALLOTTEE_ID" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <addForeignKeyConstraint
+                constraintName="FK_ALLOTTEE"
+                baseTableName="HISTORY_OPERATION_ALLOTTEE"
+                baseColumnNames="ALLOTTEE_ID"
+                referencedTableName="ALLOTTEE"
+                referencedColumnNames="ID" />
+
+    </changeSet>
+
+</databaseChangeLog>

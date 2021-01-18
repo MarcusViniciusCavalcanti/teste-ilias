@@ -1,0 +1,93 @@
+<div class="container">
+    <mat-card>
+        <mat-card-title>Lista de Beneficiários</mat-card-title>
+        <mat-card-subtitle>Contém todos os beneficiários cadastrados no sistema</mat-card-subtitle>
+
+        <div class="spinner-container" *ngIf="dataSource.loading$ | async">
+            <mat-spinner></mat-spinner>
+        </div>
+
+        <mat-card-content>
+            <mat-table [dataSource]="dataSource"
+                       matSort matSortActive="name"
+                       matSortDirection="asc"
+                       matSortDisableClear>
+                <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let allottee">{{ allottee.id }}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Nome</mat-header-cell>
+                    <mat-cell *matCellDef="let allottee">{{ allottee.name }}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="cpf">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>CPF</mat-header-cell>
+                    <mat-cell *matCellDef="let allottee">{{ allottee.cpf }}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="email">
+                    <mat-header-cell *matHeaderCellDef>email</mat-header-cell>
+                    <mat-cell *matCellDef="let allottee">{{ allottee.email }}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="retirement">
+                    <mat-header-cell *matHeaderCellDef>Saldo total</mat-header-cell>
+                    <mat-cell  *matCellDef="let allottee">{{ allottee.retirement }}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="amountYears">
+                    <mat-header-cell *matHeaderCellDef>Tempo</mat-header-cell>
+                    <mat-cell *matCellDef="let allottee">{{ allottee.amountYears }}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+                    <mat-cell *matCellDef="let allottee">
+                        {{ statusAsString(allottee) }}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef>Açao</mat-header-cell>
+                    <mat-cell *matCellDef="let allottee">
+                        <ng-container *ngIf="isActive(allottee)">
+                            <a routerLink="/beneficiarios/atualizar/{{ allottee.id }}" class="edit">
+                                <i class="material-icons">
+                                    edit
+                                </i>
+                            </a>
+
+                            <a (click)="openDeleteDialog(allottee)" class="delete">
+                                <i class="material-icons">
+                                    delete
+                                </i>
+                            </a>
+                        </ng-container>
+                        <ng-container *ngIf="allottee.status === 'EXCLUDED'">
+                            <button mat-raised-button color="accent" (click)="opetenReactiveDialog(allottee)">Reativar</button>
+                        </ng-container>
+
+                        <ng-container *ngIf="allottee.status === 'ACTIVE'">
+                            <a routerLink="/transacoes/{{ allottee.id }}" class="transacao">
+                                <i class="material-icons">
+                                    request_page
+                                </i>
+                            </a>
+                        </ng-container>
+                    </mat-cell>
+
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+
+                <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+            </mat-table>
+
+            <mat-paginator [length]="dataSource.totalElements$ | async" [pageSize]="5" [pageSizeOptions]="[3, 5, 10]"></mat-paginator>
+
+        </mat-card-content>
+    </mat-card>
+</div>
+

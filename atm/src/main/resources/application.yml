@@ -1,0 +1,161 @@
+spring:
+  datasource:
+    hikari:
+      maximumPoolSize: 100
+  jmx:
+    enabled: false
+  sleuth:
+    web:
+      exception-logging-filter-enabled: false
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/databaseChangelog.xml
+  liquibase-heart-beat-aware-lock:
+    change-log-lock-wait-time: PT2M
+    change-log-lock-poll-rate: PT1S
+  rabbitmq:
+    listener:
+      direct:
+        default-requeue-rejected: false
+      simple:
+        default-requeue-rejected: false
+
+zonework:
+  messages:
+    broker-queue: rabbit
+    broker-topic: rabbit
+    queue-naming:
+      prefix: ~
+      suffix: ~
+  atm:
+    queues:
+      transactional:
+        receive:
+          name: ${zonework.messages.queue-naming.prefix}-TRANSACTIONAL-BALANCE-RECEIVE-${zonework.messages.queue-naming.suffix}
+          rabbit:
+            concurrency: 5
+            retries:
+              amount: 60
+              interval: 60000
+          read:
+            listener-bean-id: asynchronousProcessingTransactionalReceiveForReadingMessage
+        send:
+          name: ${zonework.messages.queue-naming.prefix}-TRANSACTIONAL-BALANCE-SEND-${zonework.messages.queue-naming.suffix}
+          rabbit:
+            exchange: ${zonework.messages.queue-naming.prefix}-TRANSACTIONAL-BALANCE-SEND-${zonework.messages.queue-naming.suffix}
+            declare: true
+            concurrency: 5
+            retries:
+              amount: 60
+              interval: 60000
+          read:
+            listener-bean-id: asynchronousProcessingWithQueueTransactionaForReadingMessage
+        complete:
+          name: CAD-ALLOTTEE-TRANSACTIONAL-BALANCE-COMPLETE-ILIAS-TEST
+          rabbit:
+          read:
+            listener-bean-id: asynchronousProcessingTransactionCompleteForRendingMessage
+            concurrency: 5
+            retries:
+              amount: 60
+              interval: 60000
+      allottee:
+        cad-allottee:
+          name: ${zonework.messages.queue-naming.prefix}-REGISTRATION-ALLOTTE-${zonework.messages.queue-naming.suffix}
+          rabbit:
+            exchange: CAD-ALLOTTEE-REGISTRATION-ALLOTTE-ILIAS-TEST
+            declare: true
+            concurrency: 5
+            retries:
+              amount: 60
+              interval: 60000
+          read:
+            listener-bean-id: asynchronousProcessingRegistrationAllotteeForReadingMessage
+            concurrency: 5
+            retries:
+              amount: 60
+              interval: 60000
+        cad-allottee-operation:
+          name: CAD-ALLOTTEE-OPERATION-ALLOTTE-ILIAS-TEST
+          read:
+            listener-bean-id: asynchronousProcessingOperationAllotteeForReadingMessage
+            concurrency: 5
+            retries:
+              amount: 60
+              interval: 60000
+
+application:
+  job:
+    reserval:
+      fixedDelay: 60000 # 1 minuto
+  messages:
+    rabbit:
+      ignore-declaration-exceptions: true
+    queues:
+      - name: ${zonework.atm.queues.transactional.receive.name}
+        description: Asynchrounous Transactionals balance receive
+        connection: ${zonework.messages.broker-queue}
+        rabbit:
+          delay: 2000
+        read:
+          listener-bean-id: ${zonework.atm.queues.transactional.receive.read.listener-bean-id}
+          concurrency: ${zonework.atm.queues.transactional.receive.rabbit.concurrency}
+          max-retries: ${zonework.atm.queues.transactional.receive.rabbit.retries.amount}
+          retry-interval: ${zonework.atm.queues.transactional.update.rabbit.retries.interval}
+          auto-startup: true
+      - name: ${zonework.atm.queues.transactional.send.name}
+        description: Asynchrounous Transactionals balance sending
+        connection: ${zonework.messages.broker-queue}
+        topic: true
+        rabbit:
+          exchange: ${zonework.atm.queues.transactional.send.rabbit.exchange}
+          declare: ${zonework.atm.queues.transactional.send.rabbit.declare}
+        read:
+          listener-bean-id: ${zonework.atm.queues.transactional.send.read.listener-bean-id}
+          rabbit:
+            concurrency: ${zonework.atm.queues.transactional.send.rabbit.concurrency}
+            max-retries: ${zonework.atm.queues.transactional.send.rabbit.retries.amount}
+            retry-interval: ${zonework.atm.queues.transactional.send.rabbit.retries.interval}
+            auto-startup: true
+      - name: ${zonework.atm.queues.transactional.complete.name}
+        description: Asynchronous Operations Allottee
+        connection: ${zonework.messages.broker-queue}
+        read:
+          listener-bean-id: ${zonework.atm.queues.transactional.complete.read.listener-bean-id}
+          rabbit:
+            concurrency: ${zonework.atm.queues.transactional.complete.read.concurrency}
+            max-retries: ${zonework.atm.queues.transactional.complete.read.retries.amount}
+            retry-interval: ${zonework.atm.queues.transactional.complete.read.retries.interval}
+            auto-startup: true
+      - name: ${zonework.atm.queues.allottee.cad-allottee-operation.name}
+        description: Asynchronous Operations Allottee
+        connection: ${zonework.messages.broker-queue}
+        read:
+          listener-bean-id: ${zonework.atm.queues.allottee.cad-allottee-operation.read.listener-bean-id}
+          rabbit:
+            concurrency: ${zonework.atm.queues.allottee.cad-allottee-operation.read.concurrency}
+            max-retries: ${zonework.atm.queues.allottee.cad-allottee-operation.read.retries.amount}
+            retry-interval: ${zonework.atm.queues.allottee.cad-allottee-operation.read.retries.interval}
+            auto-startup: true
+      - name: ${zonework.atm.queues.allottee.cad-allottee.name}
+        description: Asynchronous Registration Allottee
+        connection: ${zonework.messages.broker-queue}
+        topic: true
+        rabbit:
+          exchange: ${zonework.atm.queues.allottee.cad-allottee.rabbit.exchange}
+        read:
+          listener-bean-id: ${zonework.atm.queues.allottee.cad-allottee.read.listener-bean-id}
+          rabbit:
+            concurrency: ${zonework.atm.queues.allottee.cad-allottee.read.concurrency}
+            max-retries: ${zonework.atm.queues.allottee.cad-allottee.read.retries.amount}
+            retry-interval: ${zonework.atm.queues.allottee.cad-allottee.read.retries.interval}
+            auto-startup: true

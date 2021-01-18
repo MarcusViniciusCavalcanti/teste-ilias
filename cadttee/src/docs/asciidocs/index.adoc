@@ -1,0 +1,364 @@
+= Api - CadTee v1.0
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+:operation-curl-request-title: Example request
+:operation-http-response-title: Example response
+
+[[overview]]
+== Overview
+
+== Começando
+Esta documentação ira auxiliar em novas implementações de __clients sides__, dando uma base
+de como manipular os recursos que a API provem.
+
+[[overview-http-verbs]]
+=== HTTP Verbs
+
+Esta Api foi construída a seguir os padrões RESTFull, com modelo de maturidade nível 2,
+tentando aderir o mais próximo,
+possíveis das convenções uso dos verbos HTTPs, por motivos de implementação o método HTTP `PATCH`, não foi
+utilizado devido às funcionalidades da aplicação, pois dados os requisitos não careceram de fazer atualizações pontuais
+nas entidades.
+
+|===
+| Verb | Usage
+
+| `GET`
+| Usado para recuperar recursos
+
+| `POST`
+| Usado para criar um recurso
+
+| `PUT`
+| Usado para atualizar um recurso
+
+| `DELETE`
+| Usado para remover um recurso existente.
+|===
+
+[[overview-http-status-codes]]
+=== HTTP status codes
+
+Esta Api foi construída, seguindo os padrões RESTFull, tentando aderir o mais próximo possível as suas convenções no seu uso dos códigos de Status HTTP.
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| Para requisições aceitas e processadas.
+
+| `201 Created`
+| Um novo recurso foi criado com sucesso. O URI do recurso está disponível a partir da resposta.
+
+| `204 No Content`
+| Requisição foi processada e não há respostas para tal.
+
+| `400 Bad Request`
+| Requisição negada, pois está mal formatada, exemplo de retorno de erro quando
+a falta de um atributo, no corpo da mensagem.
+
+| `404 Not Found`
+| Este recurso não foi encontrado.
+
+| `409 Conflict`
+| O recurso já existe com os dados informados.
+
+| `422 Unprocessable Entity`
+| Requisição negada, pois não passou na validação da requisição, um atributo nulo ou
+ultrapassou o limite de caracteres, são exemplos.
+
+| `500 Internal Server Error`
+| Houve um problema de processamento interno.
+|===
+
+TIP: consulte a <<erros, sessão de erros>> para avaliar as respostas de error e obter mais informações sobre os campos
+
+[[overview-pagination]]
+=== Lista de Recursos (Paginação)
+
+Todas requisições que retorna uma lista de recursos, exemplo: <<allottee-get-all>>, retornar um objeto, que contém: **__Page__**.
+
+[[allottee]]
+== Beneficiários
+
+Beneficiário é o recurso que representa o dominio do problema a qual a aplicação destina-se a resolver.
+
+[[allottee-create]]
+=== Criando um Beneficiário
+|===
+|MÉTODO HTTP|URI
+
+|POST
+|`/allottee`
+|===
+
+Cria um recurso beneficiário na aplicação.
+
+A crição do recurso Beneficiário deve seguir algumas regras de campos únicos são eles:
+
+|===
+|campos
+
+|CPF
+|E-MAIL
+|===
+
+==== Requisição
+Exemplo de requisição:
+include::{snippets}/allottee/create/success/curl-request.adoc[]
+
+Descrição dos campos:
+include::{snippets}/allottee/create/success/request-fields.adoc[]
+
+==== Resposta
+Retorno:
+include::{snippets}/allottee/create/success/response-body.adoc[]
+
+Descrição dos campos:
+include::{snippets}/allottee/create/success/response-fields.adoc[]
+
+TIP: A API dispõe de um endPoint para ativar um beneficiário que já existe na base com o CPF informado na requisição, consulte <<allottee-active, sessão de ativando beneficiário>> para mais informações.
+
+==== Possíveis erros retornados
+consulte a <<erros, sessão de erros>> para mais informações.
+
+`422`
+Para erro de valdiação de campos.
+Exemplo de resposta:
+include::{snippets}/allottee/create/error/invalid-atribute/response-body.adoc[]
+
+`409`
+Quando um recurso já existe com ##CPF## ou ##E-MAIL## já existe na base.
+Exemplo de resposta:
+include::{snippets}/allottee/create/error/exist/response-body.adoc[]
+
+`400`
+Para erro de requisição mal formatada, falta de um campo no corpo da requisição é um exemplo.
+
+[[allottee-get]]
+=== Recuperando um Beneficiário por ID
+|===
+|MÉTODO HTTP|URI
+
+|GET
+|`/allottee/{id}`
+|===
+
+Retorna um recurso beneficiário pelo `ID` informado na requisição.
+
+==== Requisição
+Path Parameter:
+include::{snippets}/allottee/find-by-id/success/path-parameters.adoc[]
+
+Exmplo de requisição:
+include::{snippets}/allottee/find-by-id/success/curl-request.adoc[]
+
+==== Resposta
+Retorno:
+include::{snippets}/allottee/find-by-id/success/response-body.adoc[]
+
+Descrição dos campos:
+include::{snippets}/allottee/find-by-id/success/response-fields.adoc[]
+
+==== Possíveis erros retornados
+consulte a <<erros, sessão de erros>> para mais informações.
+
+`404`
+Quando o recurso não foi encontrado pelo ID informado.
+Exemplo de retorno:
+include::{snippets}/allottee/delete/error/not-found/response-body.adoc[]
+
+[[allottee-get-all]]
+=== Recuperando Todos Beneficiários
+|===
+|MÉTODO HTTP|URI
+
+|GET
+|`/allottee`
+|===
+
+Retorna uma página contendo uma lista de beneficiários.
+
+==== Requisição
+Query Paramenters:
+include::{snippets}/allottee/page/success/request-parameters.adoc[]
+
+Exemplo de requisição:
+include::{snippets}/allottee/page/success/curl-request.adoc[]
+
+==== Resposta
+Retorno:
+include::{snippets}/allottee/page/success/response-fields.adoc[]
+
+Descrição dos campos:
+include::{snippets}/allottee/page/success/response-fields.adoc[]
+
+[[allottee-update]]
+=== Atualizando um Beneficiários
+|===
+|MÉTODO HTTP|URI
+
+|PUT
+|`/allottee/{id}`
+|===
+
+Atualiza um recurso do ID informado na requisição com os dados passado no corpo da requisição.
+
+==== Requisição
+Path Parameter:
+include::{snippets}/allottee/update/success/path-parameters.adoc[]
+
+Exmplo de requisição:
+include::{snippets}/allottee/update/success/curl-request.adoc[]
+
+Descrição de campos:
+include::{snippets}/allottee/update/success/response-fields.adoc[]
+
+==== Resposta
+Retorno:
+include::{snippets}/allottee/update/success/response-body.adoc[]
+
+Descrição dos campos:
+include::{snippets}/allottee/update/success/response-fields.adoc[]
+
+==== Possíveis erros retornados
+consulte a <<erros, sessão de erros>> para mais informações.
+
+`404`
+Quando o recurso não foi encontrado pelo ID informado.
+Exemplo de retorno:
+include::{snippets}/allottee/delete/error/not-found/response-body.adoc[]
+
+`409`
+Quando o ##CPF## ou ##E-MAIL## já existe na base.
+Exemplo de retorno:
+include::{snippets}/allottee/create/error/exist/response-body.adoc[]
+
+`422`
+Quando os dados no corpo da requisição estão inválidos.
+Exemplo de retorno:
+include::{snippets}/allottee/create/error/invalid-atribute/response-body.adoc[]
+
+[[allottee-delete]]
+=== Excluindo um Beneficiários
+
+|===
+|MÉTODO HTTP|URI
+
+|DELETE
+|`/allottee/{id}`
+|===
+
+Excluí um recurso beneficiário da aplicação.
+
+IMPORTANT: Observe que o recurso não é excluído fisicamente da base de dados, mas sim lógicamente, é possível reativar o beneficiário consulte <<allottee-active, sessão de ativando beneficiário>> para mais informações.
+
+==== Requisição
+Path Parameter:
+include::{snippets}/allottee/delete/success/path-parameters.adoc[]
+
+
+Exmplo de requisição:
+include::{snippets}/allottee/delete/success/curl-request.adoc[]
+
+Descrição de campos:
+include::{snippets}/allottee/update/success/response-fields.adoc[]
+
+==== Resposta
+Retorno e sem contéudo `Status Code 204`
+
+==== Possíveis erros retornados
+consulte a <<erros, sessão de erros>> para mais informações.
+
+`404`
+Quando o recurso não foi encontrado pelo ID informado.
+Exemplo de retorno:
+include::{snippets}/allottee/delete/error/not-found/response-body.adoc[]
+
+
+[[allottee-active]]
+=== Reativando um Beneficiário já cadastrado.
+|===
+|MÉTODO HTTP|URI
+
+|POST
+|`/allottee/active`
+|===
+
+Ativa um recurso beneficiário existe na base de dados.
+
+IMPORTANT: Caso o recurso não exista um novo recurso será cria com os dados informados no corpo da requisição.
+
+IMPORTANT: Observe que o recurso que será ativado tera os dados informados no corpo da requisição, em outras palavras os dados cadastrados serão sobrescrito, exceto o **CPF**. Já o valor do benefício será zerado.
+
+==== Requisição
+Exmplo de requisição:
+include::{snippets}/allottee/active/success/curl-request.adoc[]
+
+Descrição de campos:
+include::{snippets}/allottee/active/success/request-fields.adoc[]
+
+==== Resposta
+Retorno:
+include::{snippets}/allottee/active/success/response-body.adoc[]
+
+Descrição dos campos:
+include::{snippets}/allottee/active/success/response-fields.adoc[]
+
+==== Possíveis erros retornados
+consulte a <<erros, sessão de erros>> para mais informações.
+
+`409`
+Quando o ##CPF## ou ##E-MAIL## já existe na base.
+Exemplo de retorno:
+include::{snippets}/allottee/active/error/exist/response-body.adoc[]
+
+`400`
+Quando os dados no corpo da requisição estão corresponde a um recurso cadastrado e ativo.
+Exemplo de retorno:
+include::{snippets}/allottee/active/error/not-allows/response-body.adoc[]
+
+`422`
+Quando os dados do corpo da requisição são invalidos.
+Exemplo:
+include::{snippets}/allottee/create/error/invalid-atribute/response-body.adoc[]
+
+[[erros]]
+== Erros
+
+As respostas de erros da Api seguem uma estrutura padrão de campos.
+
+Campos:
+include::{snippets}/allottee/create/error/invalid-atribute/response-fields.adoc[]
+
+Campo **Error** poderá ser dois tipos, uma String ou um array de Erros, Para erros de validação
+será um array de objetos Erros, denominado **fieldErros** como mostra o exemplo:
+
+include::{snippets}/allottee/create/error/invalid-atribute/response-body.adoc[]
+
+[[erros-unprocess]]
+=== Validação de campos
+
+Os objetos fieldsErrors, poderão ser os seguintes:
+
+|===
+|ERROR|DESCRIPTION
+
+|NotBlank
+|O campo não pode ser nulo ou vazio.
+
+|NotNull
+|O não pode ser nulo.
+
+|Size
+|O campo deve respeitar o tamanho definido. Verifique o tamanho do valor do campo.
+
+|Positive
+|O campo deve conter números negativos.
+
+|===
+

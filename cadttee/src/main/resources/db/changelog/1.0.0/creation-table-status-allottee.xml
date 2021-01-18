@@ -1,0 +1,50 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="creation-status-allottee" author="vinicius" >
+        <createTable tableName="STATUS_ALLOTTEE">
+            <column name="ID"
+                    type="integer"
+                    autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_STATUS"/>
+            </column>
+
+            <column name="VALUE" type="VARCHAR(255 ${char})" remarks="The status itself.">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="ALLOWS_REGISTRY"
+                    type="numeric(1,0)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="ALLOWS_EXCLUSION"
+                    type="numeric(1,0)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="ALLOWS_UPDATE" type="numeric(1,0)" >
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="CREATION_DATE" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="PUBLISH"
+                    type="numeric(1,0)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="ASYNCHRONOUS_PROCESSING"
+                    type="numeric(1,0)">
+                <constraints nullable="false" />
+            </column>
+
+        </createTable>
+
+    </changeSet>
+</databaseChangeLog>

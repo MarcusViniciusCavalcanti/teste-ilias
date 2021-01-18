@@ -1,0 +1,9 @@
+.article-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.article-details .label-details {
+    margin: 10px;
+    padding: 10px;
+}

@@ -1,0 +1,10 @@
+<mat-dialog-content>
+    <span>
+        Deseja mesmo deletar o Beneficiário
+    </span>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Não</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Sim</button>
+</mat-dialog-actions>

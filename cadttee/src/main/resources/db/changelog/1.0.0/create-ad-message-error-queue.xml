@@ -1,0 +1,35 @@
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="creation_MESSAGE_ERROR_QUEUE" author="vinicius">
+
+        <createTable tableName="MESSAGE_ERROR_QUEUE">
+            <column name="ID" type="Integer" valueComputed="${uuid}">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_MESSAGE_ERROR_QUEUE"  />
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(100 ${char})">
+                <constraints nullable="false" />
+            </column>
+            <column name="TIMESTAMP_UTC" type="${datetime}">
+                <constraints nullable="false" />
+            </column>
+            <column name="ORIGINAL_QUEUE_NAME" type="VARCHAR(100 ${char})">
+                <constraints nullable="false" />
+            </column>
+            <column name="DLQ_QUEUE_NAME" type="VARCHAR(100 ${char})">
+                <constraints nullable="false" />
+            </column>
+            <column name="MESSAGE_CONTENT" type="CLOB">
+                <constraints nullable="false" />
+            </column>
+            <column name="EXCEPTION_ROOT_CAUSE_MESSAGE" type="VARCHAR(400 ${char})">
+                <constraints nullable="false" />
+            </column>
+            <column name="EXCEPTION_STACK_TRACE" type="CLOB"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,22 @@
+server:
+  port: 8081
+
+zonework:
+  messages:
+    rabbit:
+      connection:
+        host: localhost
+        port: 5672
+        password: guest
+        username: guest
+    broker-queue: rabbit
+    queue-naming:
+      prefix: ATM
+      suffix: ILIAS-TEST
+
+spring:
+  datasource:
+    username: atm
+    password: atm
+    url: jdbc:mysql://localhost:3307/atm?createDatabaseIfNotExist=true&serverTimezone=UTC
+    driver-class-name: com.mysql.jdbc.Driver

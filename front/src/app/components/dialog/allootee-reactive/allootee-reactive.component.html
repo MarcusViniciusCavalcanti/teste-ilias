@@ -1,0 +1,10 @@
+<mat-dialog-content>
+    <span>
+        Deseja reativar o beneficiário com os mesmo dados?
+    </span>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close]="data.id">Não</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Sim</button>
+</mat-dialog-actions>

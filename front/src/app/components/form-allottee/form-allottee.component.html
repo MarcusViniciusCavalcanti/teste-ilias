@@ -1,0 +1,32 @@
+<mat-card>
+    <mat-card-title>Novo Beneficiário</mat-card-title>
+
+    <form>
+        <mat-form-field>
+            <input matInput
+                   placeholder="Nome"
+                   [(ngModel)]="allottee.name"
+                   name="name">
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput placeholder="Cpf"
+                   [(ngModel)]="allottee.cpf"
+                   name="cpf">
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput placeholder="email"
+                   [(ngModel)]="allottee.email"
+                   name="email">
+        </mat-form-field>
+
+        <mat-form-field>
+            <input matInput placeholder="Quantidade de anos"
+                   [(ngModel)]="allottee.amountYears"
+                   name="amountYears">
+        </mat-form-field>
+    </form>
+
+    <button mat-raised-button (click)="save(allottee)" color="primary">Enviar</button>
+</mat-card>

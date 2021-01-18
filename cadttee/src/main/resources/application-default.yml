@@ -1,0 +1,19 @@
+zonework:
+  messages:
+    rabbit:
+      connection:
+        host: localhost
+        port: 5672
+        username: guest
+        password: guest
+    broker-queue: rabbit
+    queue-naming:
+      prefix: CAD-ALLOTTEE
+      suffix: ILIAS-TEST
+
+spring:
+  datasource:
+    username: cad
+    password: cad
+    url: jdbc:mysql://localhost:3306/cad?createDatabaseIfNotExist=true&serverTimezone=UTC
+    driver-class-name: com.mysql.jdbc.Driver

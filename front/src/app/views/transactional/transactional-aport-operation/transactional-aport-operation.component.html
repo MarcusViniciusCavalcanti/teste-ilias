@@ -1,0 +1,10 @@
+<form>
+    <mat-form-field>
+        <input matInput
+               placeholder="Valor"
+               [(ngModel)]="transaction.value"
+               name="value">
+    </mat-form-field>
+</form>
+<button mat-raised-button (click)="send(transaction, 'INCREMENT')">Depositar</button>
+<button mat-raised-button color="warn" (click)="send(transaction, 'DECREMENT')">Retirar</button>

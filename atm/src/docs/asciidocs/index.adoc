@@ -1,0 +1,225 @@
+= Api - ATM v1.0
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+:operation-curl-request-title: Example request
+:operation-http-response-title: Example response
+
+== Começando
+Esta documentação ira auxiliar em novas implementações de __clients sides__, dando uma base
+de como manipular os recursos que a API provem.
+
+[[overview-http-verbs]]
+=== HTTP Verbs
+
+Esta Api foi construída a seguir os padrões RESTFull, com modelo de maturidade nível 2,
+tentando aderir o mais próximo,
+possíveis das convenções uso dos verbos HTTPs, por motivos de implementação o método HTTP `PATCH`, não foi
+utilizado devido às funcionalidades da aplicação, pois dados os requisitos não careceram de fazer atualizações pontuais
+nas entidades.
+
+|===
+| Verb | Usage
+
+| `GET`
+| Usado para recuperar recursos
+
+| `POST`
+| Usado para criar um recurso.
+
+| `PUT`
+| Usado para atualizar um recurso.
+
+| `DELETE`
+| Usado para remover um recurso existente.
+|===
+
+[[overview-http-status-codes]]
+=== HTTP status codes
+
+Esta Api foi construída, seguindo os padrões RESTFull, tentando aderir o mais próximo possível as suas convenções no seu uso dos códigos de __Status__ HTTP.
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| Para requisições aceitas e processadas.
+
+| `201 Acepted`
+| Um novo recurso foi criado com sucesso. O URI do recurso está disponível a partir da resposta.
+
+| `400 Bad Request`
+| Requisição negada, pois está mal formatada, exemplo de retorno de erro quando
+a falta de um atributo, no corpo da mensagem.
+
+| `404 Not Found`
+| Este recurso não foi encontrado.
+
+| `422 Unprocessable Entity`
+| Requisição negada, pois não passou na validação da requisição, um atributo nulo ou
+ultrapassou o limite de caracteres, são exemplos.
+
+| `500 Internal Server Error`
+| Houve um problema de processamento interno.
+|===
+
+TIP: Consulte a <<erros, sessão de erros>> para avaliar as respostas de error e obter mais informações sobre os campos.
+
+[[overview-pagination]]
+=== Lista de Recursos (Paginação)
+
+Todas as requisições que retorna uma lista de recursos, exemplo: <<transactiona-get-all>>, retornar um objeto, que contém: **__Page__**.
+
+[[transactional]]
+== Transações
+
+Transação e um recurso da qual a API gerencia para atualizar o valor do benefício de cada beneficiário, são **__três__** tipos das operações:
+
+**INCREMENT** Adiciona um determinado valor do benefício.
+**DECREMENT** Subtrai um determinado valor do benefício.
+**REVERSAL** Extrona, subtrai, uma transação anterior (esta operação e automática do sistem.)
+
+[[transactiona-create]]
+=== Criando uma transação
+
+|===
+|MÉTODO HTTP|URI
+
+|POST
+|`/transactional`
+|===
+
+Cria uma transação para um determinado beneficiário.
+
+IMPORTANT: Os tipos das transações possíveis são **INCREMENT** e **DECREMENT**.
+
+==== Requisição
+Descrição dos Campos:
+include::{snippets}/transactional/create/success/request-fields.adoc[]
+
+Exemplo de requisição:
+include::{snippets}/transactional/create/success/curl-request.adoc[]
+
+==== Resposta
+Retorno:
+include::{snippets}/transactional/create/success/request-body.adoc[]
+
+Descrição dos campos:
+include::{snippets}/transactional/create/success/response-fields.adoc[]
+
+
+==== Possíveis erros retornados
+consulte a <<erros, sessão de erros>> para mais informações.
+`404`
+Quando o recurso allottee não foi encontrado pelo ID informado.
+Exemplo de retorno:
+include::{snippets}/transactional/create/error/not-found/response-body.adoc[]
+
+`422`
+Quando os valores no corpo da requisição são inválidos.
+Exemplo de retorno:
+include::{snippets}/transactional/create/error/validation/response-body.adoc[]
+
+`400`
+Quando o recurso beneficiário ainda **não** está ativo no sistema.
+Exemplo de retorno:
+include::{snippets}/transactional/create/error/bad-request/response-body.adoc[]
+
+[[transactiona-get-all]]
+=== Recuperando todas as transações de um beneficiário.
+|===
+|MÉTODO HTTP|URI
+
+|GET
+|`/transactional`
+|===
+Retorna uma página contendo uma lista de beneficiários.
+
+==== Requisição
+
+Path Parameters:
+include::{snippets}/transactional/page/success/path-parameters.adoc[]
+
+Query Paramenters:
+include::{snippets}/transactional/page/success/path-parameters.adoc[]
+
+Exemplo de requisição:
+include::{snippets}/transactional/page/success/curl-request.adoc[]
+
+==== Resposta
+Retorno:
+include::{snippets}/transactional/page/success/response-body.adoc[]
+
+Descrição dos campos:
+include::{snippets}/transactional/page/success/response-fields.adoc[]
+
+[[allottee]]
+== Beneficiários
+|===
+|MÉTODO HTTP|URI
+
+|GET
+|`/transactional/allottee/{id}`
+|===
+
+Retorna uma página contendo uma lista de beneficiários.
+
+=== Requisição
+Path Paramenters:
+include::{snippets}/transactional/allottee/success/path-parameters.adoc[]
+
+Exemplo de requisição:
+include::{snippets}/transactional/allottee/success/curl-request.adoc[]
+
+=== Resposta
+Retorno:
+include::{snippets}/transactional/allottee/success/response-body.adoc[]
+
+Descrição dos campos:
+include::{snippets}/transactional/allottee/success/response-fields.adoc[]
+
+consulte a <<erros, sessão de erros>> para mais informações.
+`404`
+Quando o recurso allottee não foi encontrado pelo ID informado.
+Exemplo de retorno:
+include::{snippets}/transactional/allottee/error/not-found/response-body.adoc[]
+
+
+[[erros]]
+== Erros
+
+As respostas de erros da Api seguem uma estrutura padrão de campos.
+
+Campos:
+include::{snippets}/transactional/create/error/not-found/response-fields.adoc[]
+
+Campo **Error** poderá ser dois tipos, uma String ou um array de Erros, Para erros de validação
+será um array de objetos Erros, denominado **fieldErros** como mostra o exemplo:
+
+include::{snippets}/transactional/create/error/validation/response-fields.adoc[]
+
+[[erros-unprocess]]
+=== Validação de campos
+
+Os objetos fieldsErrors, poderão ser os seguintes:
+
+|===
+|ERROR|DESCRIPTION
+
+|NotBlank
+|O campo não pode ser nulo ou vazio.
+
+|NotNull
+|O não pode ser nulo.
+
+|Size
+|O campo deve respeitar o tamanho definido. Verifique o tamanho do valor do campo.
+
+|Positive
+|O campo deve conter números negativos.
+
+|===
+

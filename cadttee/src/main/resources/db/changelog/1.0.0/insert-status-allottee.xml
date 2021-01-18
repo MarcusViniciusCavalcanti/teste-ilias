@@ -1,0 +1,53 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet author="venicius" id="insert-default-status">
+        <insert tableName="STATUS_ALLOTTEE">
+            <column name="ID">1</column>
+            <column name="VALUE">REGISTRATION_PENDING</column>
+            <column name="ALLOWS_REGISTRY" value="0"/>
+            <column name="ALLOWS_EXCLUSION" value="0"/>
+            <column name="ALLOWS_UPDATE" value="0"/>
+            <column name="CREATION_DATE" valueDate="${now}"/>
+            <column name="PUBLISH" value="1"/>
+            <column name="ASYNCHRONOUS_PROCESSING" value="0"/>
+        </insert>
+
+        <insert tableName="STATUS_ALLOTTEE">
+            <column name="ID">2</column>
+            <column name="VALUE">EXCLUDED</column>
+            <column name="ALLOWS_REGISTRY" value="1"/>
+            <column name="ALLOWS_EXCLUSION" value="0"/>
+            <column name="ALLOWS_UPDATE" value="0"/>
+            <column name="CREATION_DATE" valueDate="${now}"/>
+            <column name="PUBLISH" value="0"/>
+            <column name="ASYNCHRONOUS_PROCESSING" value="1"/>
+        </insert>
+
+        <insert tableName="STATUS_ALLOTTEE">
+            <column name="ID">4</column>
+            <column name="VALUE">ACTIVE</column>
+            <column name="ALLOWS_REGISTRY" value="0"/>
+            <column name="ALLOWS_EXCLUSION" value="1"/>
+            <column name="ALLOWS_UPDATE" value="1"/>
+            <column name="CREATION_DATE" valueDate="${now}"/>
+            <column name="PUBLISH" value="0"/>
+            <column name="ASYNCHRONOUS_PROCESSING" value="1"/>
+        </insert>
+
+        <insert tableName="STATUS_ALLOTTEE">
+            <column name="ID">5</column>
+            <column name="VALUE">REJECTED</column>
+            <column name="ALLOWS_REGISTRY" value="1"/>
+            <column name="ALLOWS_EXCLUSION" value="0"/>
+            <column name="ALLOWS_UPDATE" value="0"/>
+            <column name="CREATION_DATE" valueDate="${now}"/>
+            <column name="PUBLISH" value="1"/>
+            <column name="ASYNCHRONOUS_PROCESSING" value="0"/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>

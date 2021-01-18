@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <property name="char" value="" dbms="mysql,h2"/>
+
+    <property name="maxVarcharLength" value="16383" dbms="mysql"/>
+    <property name="maxVarcharLength" value="32767" dbms="h2"/>
+
+    <property name="now" value="now()" dbms="mysql,h2"/>
+
+    <property name="uuid" value="BINARY(16)" dbms="mysql,h2"/>
+
+    <property name="datetime" value="DATETIME" dbms="h2"/>
+    <property name="datetime" value="DATETIME(3)" dbms="mysql"/>
+
+    <property name="uuid_function" value="unhex(replace(uuid(),'-',''))" dbms="mysql"/>
+    <property name="uuid_function" value="random_uuid()" dbms="h2"/>
+
+    <property name="mediumtext" value="CLOB" dbms="h2"/>
+    <property name="mediumtext" value="MEDIUMTEXT" dbms="mysql"/>
+
+</databaseChangeLog>

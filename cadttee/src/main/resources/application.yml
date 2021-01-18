@@ -1,0 +1,121 @@
+spring:
+  datasource:
+    hikari:
+      maximumPoolSize: 100
+  jmx:
+    enabled: false
+  sleuth:
+    web:
+      exception-logging-filter-enabled: false
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/databaseChangelog.xml
+  liquibase-heart-beat-aware-lock:
+    change-log-lock-wait-time: PT2M
+    change-log-lock-poll-rate: PT1S
+  rabbitmq:
+    listener:
+      direct:
+        default-requeue-rejected: false
+      simple:
+        default-requeue-rejected: false
+
+zonework:
+  messages:
+    broker-queue: rabbit
+    broker-topic: rabbit
+    queue-naming:
+      prefix: ~
+      suffix: ~
+  cad:
+    queues:
+      transactional:
+        update-retirement:
+          name: ${zonework.messages.queue-naming.prefix}-TRANSACTIONAL-BALANCE-SEND-${zonework.messages.queue-naming.suffix}
+          rabbit:
+            exchange: ATM-TRANSACTIONAL-BALANCE-SEND-ILIAS-TEST
+            declare: true
+            concurrency: 5
+            retries:
+              amount: 60
+              interval: 60000
+          read:
+            listener-bean-id: asynchronousProcessingUpateRetimenetForReadingMessage
+        complete-process:
+          name: ${zonework.messages.queue-naming.prefix}-TRANSACTIONAL-BALANCE-COMPLETE-${zonework.messages.queue-naming.suffix}
+          rabbit:
+            concurrency: 5
+            retries:
+              amount: 60
+              interval: 60000
+      allottee:
+        cad-allottee:
+          name: ${zonework.messages.queue-naming.prefix}-REGISTRATION-ALLOTTE-${zonework.messages.queue-naming.suffix}
+          rabbit:
+            exchange: ${zonework.messages.queue-naming.prefix}-REGISTRATION-ALLOTTE-${zonework.messages.queue-naming.suffix}
+            declare: true
+          read:
+            listener-bean-id: asynchronousProcessingRegistrationAllotteeForReadingMessage
+            concurrency: 5
+            retries:
+              amount: 60
+              interval: 60000
+        cad-allottee-operation:
+          name: ${zonework.messages.queue-naming.prefix}-OPERATION-ALLOTTE-${zonework.messages.queue-naming.suffix}
+          rabbit:
+            concurrency: 5
+            retries:
+              amount: 60
+              interval: 60000
+
+application:
+  messages:
+    rabbit:
+      ignore-declaration-exceptions: true
+    queues:
+      - name: ${zonework.cad.queues.transactional.update-retirement.name}
+        description: Asynchronous Operations over transactionals
+        connection: ${zonework.messages.broker-queue}
+        topic: true
+        rabbit:
+          exchange: ${zonework.cad.queues.transactional.update-retirement.rabbit.exchange}
+        read:
+          listener-bean-id: ${zonework.cad.queues.transactional.update-retirement.read.listener-bean-id}
+          rabbit:
+            concurrency: ${zonework.cad.queues.transactional.update-retirement.rabbit.concurrency}
+            max-retries: ${zonework.cad.queues.transactional.update-retirement.rabbit.retries.amount}
+            retry-interval: ${zonework.cad.queues.transactional.update-retirement.rabbit.retries.interval}
+            auto-startup: true
+      - name: ${zonework.cad.queues.transactional.complete-process.name}
+        description: Asynchronous Operations complete transactional
+        connection: ${zonework.messages.broker-queue}
+        rabbti:
+          delay: 2000
+      - name: ${zonework.cad.queues.allottee.cad-allottee-operation.name}
+        description: Asynchronous Operations Allottee
+        connection: ${zonework.messages.broker-queue}
+        rabbit:
+          delay: 2000
+      - name: ${zonework.cad.queues.allottee.cad-allottee.name}
+        description: Asynchronous Registration Allottee
+        connection: ${zonework.messages.broker-queue}
+        topic: true
+        rabbit:
+          exchange: ${zonework.cad.queues.allottee.cad-allottee.rabbit.exchange}
+          declare: ${zonework.cad.queues.allottee.cad-allottee.rabbit.declare}
+        read:
+          listener-bean-id: ${zonework.cad.queues.allottee.cad-allottee.read.listener-bean-id}
+          rabbit:
+            concurrency: ${zonework.cad.queues.allottee.cad-allottee.read.concurrency}
+            max-retries: ${zonework.cad.queues.allottee.cad-allottee.read.retries.amount}
+            retry-interval: ${zonework.cad.queues.allottee.cad-allottee.read.retries.interval}
+            auto-startup: true

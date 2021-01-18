@@ -1,0 +1,40 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="cretion-allottee" author="vinicius">
+        <createTable tableName="ALLOTTEE">
+            <column name="ID"
+                    type="INTEGER">
+                <constraints nullable="false"
+                             primaryKey="true"
+                             primaryKeyName="PK_ALLOTTEE"/>
+            </column>
+
+            <column name="NAME" type="VARCHAR(150 ${char})" />
+
+            <column name="CPF" type="VARCHAR(11 ${char})">
+                <constraints unique="true" />
+            </column>
+
+            <column name="RETIREMENT_BALANCE" type="DECIMAL" />
+
+            <column name="RETIREMENT_VALUE" type="DECIMAL" />
+
+            <column name="AMOUNT_YEARS" type="INTEGER" />
+
+            <column name="CREATION_DATE" type="DATE"/>
+
+            <column name="LAST_UPDATE_DATE" type="DATE"/>
+
+            <column name="STATUS" type="VARCHAR(50 ${char})">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

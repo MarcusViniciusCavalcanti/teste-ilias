@@ -1,0 +1,60 @@
+
+<mat-card>
+    <section>
+        <article class="article-details">
+            <p>
+                <label class="label-details">Nome:</label><strong> {{ allottee.name }}</strong>
+                <label class="label-details">CPF:</label><strong> {{ allottee.cpf }}</strong>
+            </p>
+            <p>
+                <label class="label-details">Saldo total:</label><strong> {{ allottee.retirement}}</strong>
+                <label class="label-details">Tempo do beneficio em anos</label><strong> {{ allottee.amountYears }}</strong>
+                <label class="label-details">Valor do beneficío</label><strong> {{ allottee.retirementValue }}</strong>
+            </p>
+        </article>
+    </section>
+
+    <section>
+        <app-transactional-aport-operation [id]="id" (createNewTransactional)="loadPage($event)"></app-transactional-aport-operation>
+    </section>
+
+    <mat-card-content>
+        <div class="spinner-container" *ngIf="dataSource.loading$ | async">
+            <mat-spinner></mat-spinner>
+        </div>
+
+        <mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef >Id</mat-header-cell>
+                <mat-cell *matCellDef="let transactional">{{ transactional.id }}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="value">
+                <mat-header-cell *matHeaderCellDef >Valor</mat-header-cell>
+                <mat-cell *matCellDef="let transactional">
+                    <div *ngIf="isIncrement(transactional); else decrement">
+                        <label class="green">+{{ transactional.value }}</label>
+                    </div>
+                    <ng-template #decrement>
+                        <label class="red">-{{ transactional.value }}</label>
+                    </ng-template>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="date">
+                <mat-header-cell *matHeaderCellDef >Data</mat-header-cell>
+                <mat-cell *matCellDef="let transactional">{{ transactional.date }} (+3) UTC</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <mat-header-cell *matHeaderCellDef >Status da Transação</mat-header-cell>
+                <mat-cell *matCellDef="let transactional">{{ transactional.status }}</mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        </mat-table>
+
+        <mat-paginator [length]="dataSource.totalElements$ | async" [pageSize]="3" [pageSizeOptions]="[3, 5]"></mat-paginator>
+    </mat-card-content>
+</mat-card>
